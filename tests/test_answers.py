@@ -1,10 +1,12 @@
 from needful.flow.answers import Answers
 
+
 def test_defaults_are_the_pitch_example():
     answers = Answers()
     assert answers.product == "hogedrukreiniger"
     assert answers.price == 149
     assert answers.total_uses == 12
+
 
 def test_saving_and_loading_gives_the_same_answers():
     original = Answers(product="boormachine", need="concreet", uses_per_year=10)
@@ -18,8 +20,9 @@ def test_missing_fields_fall_back_to_defaults_and_are_reported():
     assert loaded.product == "ladder"
     assert loaded.price == 149
     assert "price" in missing
-    assert "product" not in  missing
+    assert "product" not in missing
+
 
 def test_unknown_keys_are_ignored():
-    loaded, _ = Answers.from_dict({"product":"ladder", "old_field": 1})
+    loaded, _ = Answers.from_dict({"product": "ladder", "old_field": 1})
     assert loaded.product == "ladder"
