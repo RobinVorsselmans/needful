@@ -1,7 +1,7 @@
 # Roadmap needful.
 
 Levend document: vink af wat klaar is, vul **Wie** in bij het verdelen van het werk en voeg onderaan nieuwe items toe.
-Planning is gebaseerd op de urenraming (120 u. in totaal, 4 sprints). Laatste statusupdate: 29 oktober 2026.
+Planning is gebaseerd op de urenraming (120 u. in totaal, 4 sprints). Laatste statusupdate: 1 november 2026.
 
 **Legenda:** `[x]` klaar · `[~]` deels gedaan (zie opmerking) · `[ ]` nog te doen
 **Wie:** R = Robin · F = Femke · C = Christian
@@ -10,8 +10,8 @@ Planning is gebaseerd op de urenraming (120 u. in totaal, 4 sprints). Laatste st
 
 | Sprint | Thema | Raming | Status |
 |--------|-------|--------|--------|
-| 1 | Fundament | ± 26 u. + deel van "code doornemen" | bezig |
-| 2 | Vragenflow | 14 u. + deel van NiceGUI/PWA | nog niet gestart |
+| 1 | Fundament | ± 26 u. + deel van "code doornemen" | bezig (db, CI, scoremodel uitschrijven open) |
+| 2 | Vragenflow | 14 u. + deel van NiceGUI/PWA | bezig (wizard klikbaar, API-koppeling open) |
 | 3 | Advies & live | ± 52 u. | nog niet gestart |
 | 4 | Spraak | 16 u. + deel buffer | nog niet gestart |
 | | **Totaal** | **120 u.** | |
@@ -23,15 +23,15 @@ Planning is gebaseerd op de urenraming (120 u. in totaal, 4 sprints). Laatste st
 ### Vragen, uitkomsten & scoremodel uitschrijven (12 u.)
 
 - [~] Vier vragen en zeven uitkomsten beschrijven (laten, lenen, huren, samen kopen, alternatief, kopen & doorverkopen, bewust kopen) — *concept staat in `docs/concept/`, nog niet vastgelegd als beslisregels in code of docs*. Wie: ?
-- [ ] Scoremodel duurzaamheid /100 uitschrijven (levensduur, herstelbaar, recycleerbaar, reviews: gewichten + formule). Wie: ?
-- [ ] Beslisregels: welke antwoordcombinatie leidt tot welk advies. Wie: ?
+- [~] Scoremodel duurzaamheid /100 uitschrijven (levensduur, herstelbaar, recycleerbaar, reviews: gewichten + formule) — *voorlopig gelijke gewichten ja/deels/nee = 100/50/0 in `calc/score.py`, nog samen vastleggen*. Wie: R
+- [~] Beslisregels: welke antwoordcombinatie leidt tot welk advies — *5 voorbeeldregels in `calc/advice.py` (laten, lenen, huren, kopen & doorverkopen, bewust kopen); "samen kopen" en "alternatief" ontbreken nog*. Wie: R
 - [ ] Vraagteksten en uitkomstteksten finaliseren (taal en toon). Wie: ?
 
 ### Design & frontend-basis (8 u.)
 
-- [~] Startscherm met titel, tagline en productveld — *placeholder in `ui/pages.py`, nog geen design*. Wie: ?
-- [ ] Huisstijl: kleuren, typografie, basiscomponenten (kaart, knop, voortgangsbalk). Wie: ?
-- [ ] Mobile-first layout voor de wizard (schetsen of wireframes). Wie: ?
+- [x] Startscherm met titel, tagline en productveld (`ui/screens/start.py`). Wie: R
+- [x] Huisstijl: kleuren, typografie, basiscomponenten (kaart, knop, voortgangsbalk) — `ui/theme.py` + `ui/components.py`, uit het prototype. Wie: R
+- [x] Mobile-first layout voor de wizard (prototype "needful. — PWA screens", 24 okt). Wie: R
 
 ### Setup: repo, Docker, database (6 u.)
 
@@ -58,19 +58,19 @@ Planning is gebaseerd op de urenraming (120 u. in totaal, 4 sprints). Laatste st
 
 - [x] `calc/cost.py`: kost per gebruik (€ ÷ aantal keer) met tests
 - [x] FastAPI-app met `/api/health` en `/api/cost-per-use`
-- [ ] `flow/`: vragen en volgorde als datamodel (state machine of lijst van stappen). Wie: ?
-- [ ] `calc/`: duurzaamheidsscore /100 + tests. Wie: ?
-- [ ] `calc/`: adviesbepaling (antwoorden → uitkomst) + tests. Wie: ?
+- [~] `flow/`: vragen en volgorde als datamodel — *`Answers`-dataclass klaar; de volgorde zit nu in de routes `/vraag/1`…`/advies`*. Wie: R
+- [x] `calc/`: duurzaamheidsscore /100 + tests. Wie: R
+- [x] `calc/`: adviesbepaling (antwoorden → uitkomst) + tests. Wie: R
 - [ ] API-endpoints voor de flow (start, antwoord, resultaat). Wie: ?
 - [ ] Pydantic-schema's voor requests en responses. Wie: ?
 - [ ] Rate limiting (`RATE_LIMIT_PER_MINUTE` staat al in `.env.example`). Wie: ?
 
 ### NiceGUI-webversie + PWA (18 u., sprint 2–3)
 
-- [ ] Wizard: vier schermen met voortgang. Wie: ?
-- [ ] Resultaatscherm met advies en uitleg. Wie: ?
-- [ ] Wizard koppelen aan de API/flow. Wie: ?
-- [ ] Responsive voor desktop en mobiel. Wie: ?
+- [x] Wizard: vier schermen met voortgang (`ui/screens/q1–q4.py`). Wie: R
+- [x] Resultaatscherm met advies en uitleg (`ui/screens/advies.py`). Wie: R
+- [~] Wizard koppelen aan de API/flow — *schermen roepen `calc/` rechtstreeks aan; API-endpoints voor de flow nog niet*. Wie: ?
+- [x] Responsive voor desktop en mobiel (telefoonkolom van max. 430 px, op desktop gecentreerd). Wie: R
 - [ ] PWA: manifest, icons, service worker (sprint 3). Wie: ?
 - [ ] Testen op Android én iPhone (sprint 3). Wie: ?
 
@@ -148,9 +148,11 @@ Hier komt alles wat tijdens het project opduikt. Zet erbij wie het voorstelt, wa
 - Welk LLM-model gebruiken we in productie, en wat is het maandbudget?
 - Welke regio's ondersteunen we voor de scraping in de eerste versie?
 - Dockerfile gebruikt `pip` terwijl het project op `uv` draait: gelijktrekken?
+- Python-versie vastpinnen? README zegt 3.12, maar `uv` kiest lokaal soms een nieuwere (bij Robin 3.15). Voorstel: `uv python pin 3.12`, `.python-version` uit `.gitignore` halen en committen.
 
 ## Wijzigingslog
 
 | Datum | Wijziging |
 |-------|-----------|
 | 2026-10-29 | Eerste versie, status bepaald op basis van de repo |
+| 2026-11-01 | Vragenwizard klikbaar (start → 4 vragen → advies) met huisstijl, score, adviesregels, logging en UI-tests (branch `feat/wizard-screens`) |
