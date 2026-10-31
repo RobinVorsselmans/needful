@@ -1,0 +1,4 @@
+# Wie automatisch als reviewer gevraagd wordt bij elke pull request (GitHub stuurt dan een e-mail).
+# Wie de PR opent, wordt zelf niet gevraagd. Samen met de branch protection op main en develop
+# betekent dit: niets wordt gemerged zonder dat iemand anders het gelezen en goedgekeurd heeft.
+* @RobinVorsselmans @Christian-Mar @FemkeVanAcker
