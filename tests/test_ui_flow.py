@@ -4,7 +4,7 @@ from nicegui.testing import User
 
 
 async def test_pitch_example_clicks_through_to_lenen(user: User) -> None:
-    """ start -> 4 vragen -> advies met vb-waarden van de pitch: lenen"""
+    """start -> 4 vragen -> advies met vb-waarden van de pitch: lenen"""
     await user.open("/")
     user.find("Start →").click()
     await user.should_see("VRAAG 1/4")
@@ -44,4 +44,3 @@ async def test_opening_advies_directly_uses_example_and_warns(user: User, caplog
         await user.should_see("Lenen is de slimste keuze.")
     assert "antwoorden ontbreken" in caplog.text
     assert "price" in caplog.text
-      
