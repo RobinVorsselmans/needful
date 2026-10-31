@@ -1,4 +1,4 @@
-""" De antwoorden van  één gebruiker op de vier vragen. Geen NiceGUI hier.
+"""De antwoorden van  één gebruiker op de vier vragen. Geen NiceGUI hier.
 
 De standaardwaarden zijn het voorbeeld uit de pitch (hogedrukreiniger).
 """
@@ -28,13 +28,13 @@ class Answers:
     def total_uses(self) -> int:
         return total_uses(self.uses_per_year, self.years)
 
-    def to_dict(self) -> dict[Str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return asdict(self)
 
     @classmethod
-    def from_dict(cls, data: dict[stry, Any]) -> tuple["Answers", list[str]]:
-        """ Bouw een object uit opgeslagen data met deze method, geeft ook terug wat ontbreekt """
+    def from_dict(cls, data: dict[str, Any]) -> tuple["Answers", list[str]]:
+        """Bouw een object uit opgeslagen data met deze method, geeft ook terug wat ontbreekt"""
         names = [field.name for field in fields(cls)]
-        known = {name: data[name] for name in names  if name in  data}
+        known = {name: data[name] for name in names if name in data}
         missing = [name for name in names if name not in data]
         return cls(**known), missing
