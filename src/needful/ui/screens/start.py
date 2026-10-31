@@ -15,9 +15,9 @@ def start() -> None:
             ui.label("PWA - NL").classes("nf-mono nf-faint")
 
         ui.space()
-        ui.html(
-            'Koop minder.<br><span class="nf-mark">Kies beter.</span>', tag="h1"
-        ).classes("nf-h1 nf-display")
+        ui.html('Koop minder.<br><span class="nf-mark">Kies beter.</span>', tag="h1").classes(
+            "nf-h1 nf-display"
+        )
         ui.label(
             "Vier eerlijke vragen, ± 3 minuten. Je ziet wat je aankoop écht kost per gebruik "
             "en of lenen of huren slimmer is."
