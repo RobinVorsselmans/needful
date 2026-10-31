@@ -14,6 +14,8 @@ LINE = "#E6E2D8"  # lege stukjes, voortgangsbalk, randjes
 GREEN = "#ACFAD3"  # lenen
 PINK = "#FFE3EA"  # huren
 TIP = "#FFF3C4"  # achtergrond van tipkaders
+FAINT = "#B8B5AD"  # bijtekst op donkere achtergrond
+SOFT = "#D6D3CB"  # leestekst op donkere achtergrond
 
 FONTS = (
     "https://fonts.googleapis.com/css2?"
@@ -41,6 +43,18 @@ body {{ font-family: 'Space Grotesk', system-ui, sans-serif; color: {INK}; }}
 .nf-tip {{ background: {TIP}; border-radius: 12px; padding: 14px 16px; font-size: 14px; }}
 .nf-row {{ width: 100%; padding: 12px 14px; border-radius: 12px; }}
 .nf-back {{ color: {MUTED}; font-size: 15px; text-decoration: none; padding: 12px 0; }}
+
+/* Tekststijlen (na .nf-h1 en .nf-btn, zodat ze die kunnen overschrijven) */
+.nf-display {{ font-size: 46px; letter-spacing: -1px; }}
+.nf-lead {{ font-size: 17px; line-height: 1.45; }}
+.nf-btn-sm {{ min-height: 48px; font-size: 16px; border-radius: 12px; }}
+.nf-bar {{ height: 6px; border-radius: 3px; }}
+
+/* Tekstkleuren */
+.nf-muted {{ color: {MUTED}; }}
+.nf-faint {{ color: {FAINT}; }}
+.nf-soft {{ color: {SOFT}; }}
+.nf-on-dark {{ color: {PAPER}; }}
 """
 
 
