@@ -32,7 +32,7 @@ def q1() -> None:
                     "w-full"
                 )
         ui.label(
-            "„Voor het terras, één keer in de lente. → handig, niet nodig. "
+            "„Voor het terras, één keer in de lente.” → handig, niet nodig. "
             "Geen oordeel, we rekenen gewoon verder."
         ).classes("nf-tip w-full")
         nav(back="/", next_to="/vraag/2")
