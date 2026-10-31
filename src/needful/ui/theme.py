@@ -16,6 +16,9 @@ PINK = "#FFE3EA"  # huren
 TIP = "#FFF3C4"  # achtergrond van tipkaders
 FAINT = "#B8B5AD"  # bijtekst op donkere achtergrond
 SOFT = "#D6D3CB"  # leestekst op donkere achtergrond
+MINT = "#3DD598"  # kaartpunt lenen, winnend alternatief in het advies
+ROSE = "#FFB3C7"  # kaartpunt huren
+MAP = "#ECEAE2"  # achtergrond van de voorbeeldkaart
 
 FONTS = (
     "https://fonts.googleapis.com/css2?"
@@ -51,6 +54,35 @@ body {{ font-family: 'Space Grotesk', system-ui, sans-serif; color: {INK}; }}
 .nf-bar {{ height: 6px; border-radius: 3px; }}
 .nf-mic {{ width: 96px; height: 96px; background: {INK}; color: {YELLOW};
 box-shadow: 0 0 0 12px {TIP}; font-size: 24px; }}
+.nf-body {{ font-size: 15px; line-height: 1.45; }}
+.nf-big {{ font-size: 44px; font-weight: 700; letter-spacing: -1px; line-height: 1; }}
+
+/* Vraag 3: voorbeeldkaart en lijst met alternatieven (klasse-naam eindigt op de soort) */
+.nf-map {{
+  position: relative; overflow: hidden; width: 100%; height: 190px;
+  border-radius: 14px; background: {MAP}; border: 2px solid {LINE};
+}}
+.nf-map-me {{
+  position: absolute; left: 48%; top: 42%; width: 22px; height: 22px;
+  border-radius: 50%; background: {INK}; border: 3px solid {YELLOW};
+}}
+.nf-pin {{
+  position: absolute; width: 28px; height: 28px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700;
+}}
+.nf-map-note {{ position: absolute; right: 10px; bottom: 8px; font-size: 10px; color: {MUTED}; }}
+.nf-pin-lenen {{ background: {MINT}; }}
+.nf-pin-huren {{ background: {ROSE}; }}
+.nf-pin-tweedehands {{ background: {LINE}; }}
+.nf-row-lenen {{ background: {GREEN}; }}
+.nf-row-huren {{ background: {PINK}; }}
+.nf-row-tweedehands {{ border: 2px solid {LINE}; }}
+
+/* Vraag 4 en advies: kaders en vergelijking */
+.nf-card-line {{ border: 2px solid {INK}; }}
+.nf-card-dark {{ background: {INK}; color: {PAPER}; border-radius: 16px; padding: 18px 20px; }}
+.nf-compare {{ opacity: 0.8; }}
+.nf-compare-win {{ font-size: 18px; font-weight: 700; color: {MINT}; }}
 
 /* Tekstkleuren */
 .nf-muted {{ color: {MUTED}; }}
