@@ -3,7 +3,7 @@
 from fastapi import APIRouter
 from pydantic import BaseModel, Field
 
-from needful.calc.cost import cost_per_use
+from needful.calc.cost import cost_per_use, total_uses
 
 router = APIRouter()
 
@@ -26,7 +26,7 @@ class CostResponse(BaseModel):
 
 @router.post("/cost-per-use", response_model=CostResponse)
 def cost(req: CostRequest) -> CostResponse:
-    total = req.uses_per_year * req.years
+    total = total_uses(req.uses_per_year, req.years)
     return CostResponse(
         cost_per_use=cost_per_use(req.price, req.uses_per_year, req.years),
         total_uses=total,
