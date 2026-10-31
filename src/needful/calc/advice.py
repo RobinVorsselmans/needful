@@ -1,6 +1,7 @@
-"""Adviesbepaling: antwoorden -> 1 uitkomst met een reden, pure pytohn geen I/O.
+"""Adviesbepaling: antwoorden -> 1 uitkomst met een reden, pure Python, geen I/O.
 
-regels in volgorde, de eerste die past wint"""
+De regels worden in volgorde gecontroleerd; de eerste die past, wint.
+"""
 
 from dataclasses import dataclass
 from typing import Literal
@@ -11,7 +12,7 @@ Need = Literal["concreet", "handig", "impuls", "kapot"]
 Kind = Literal["lenen", "huren", "tweedehands"]
 Outcome = Literal["laten", "lenen", "huren", "kopen & doorverkopen", "bewust kopen"]
 
-LEND_MAX_KM = 2.0  # verder dan dit gaan we niet lene
+LEND_MAX_KM = 2.0  # verder dan dit gaan we niet lenen
 OWN_FROM_USES = 24  # gebruiken we het meer dan dit, dan is het zelf hebben het waard
 
 
@@ -20,7 +21,7 @@ class Alternative:
     name: str
     kind: Kind
     distance_km: float
-    price: float  # lenen=0, huren=per dag, tweedehands=eenmaling
+    price: float  # lenen=0, huren=per dag, tweedehands=eenmalig
 
 
 @dataclass(frozen=True)
@@ -35,12 +36,12 @@ class Advice:
     outcome: Outcome
     headline: str
     reason: str
-    savings: float  # bespaarde euries
+    savings: float  # bespaarde euro's t.o.v. nieuw kopen
     checks: list[RuleCheck]
 
 
 def best(alternatives: list[Alternative], kind: Kind) -> Alternative | None:
-    "cheapste alternatief van deze soort; bij gelijke prijs het dichtsbijzijnde."
+    """Goedkoopste alternatief van deze soort; bij gelijke prijs het dichtstbijzijnde."""
     options = [alternative for alternative in alternatives if alternative.kind == kind]
     return min(
         options, key=lambda alternative: (alternative.price, alternative.distance_km), default=None
@@ -64,20 +65,20 @@ def decide(
         return Advice(
             "laten",
             "Laat het even liggen.",
-            "Je wilt het vooral, je hebt het niet echt nodig."
+            "Je wilt het vooral, je hebt het niet echt nodig. "
             "Wacht een maand en kijk of je het dan nog wilt.",
             price,
             checks,
         )
 
-    # 2 gratis lenen  dichtbij, en je gebruikt het weinig -> lenen
+    # 2 gratis lenen dichtbij, en je gebruikt het weinig -> lenen
     lend = best(alternatives, "lenen")
     free_nearby = lend is not None and lend.price == 0 and lend.distance_km <= LEND_MAX_KM
     checks.append(
         RuleCheck(
             "lenen",
             free_nearby and rarely,
-            f"gratis lenen binnen {km(LEND_MAX_KM)}: {free_nearby},"
+            f"gratis lenen binnen {km(LEND_MAX_KM)}: {free_nearby}, "
             f"{total_uses} keer <= {OWN_FROM_USES}: {rarely}",
         )
     )
@@ -85,7 +86,7 @@ def decide(
         return Advice(
             "lenen",
             "Lenen is de slimste keuze.",
-            f"Je gebruikt het  {total_uses} keer. "
+            f"Je gebruikt het {total_uses} keer. "
             f"{lend.name} leent het gratis uit op {km(lend.distance_km)}.",
             price,
             checks,
@@ -96,7 +97,7 @@ def decide(
     rent_total = rent.price * total_uses if rent else None
     cheaper_to_rent = rent_total is not None and rent_total < price
     checks.append(
-        RuleCheck("huren", cheaper_to_rent, f"huren in totaal{rent_total} vs nieuw {price}")
+        RuleCheck("huren", cheaper_to_rent, f"huren in totaal {rent_total} vs nieuw {price}")
     )
     if cheaper_to_rent:
         return Advice(
@@ -116,20 +117,20 @@ def decide(
             "tweedehands",
             cheaper_second and rarely,
             f"tweedehands goedkoper: {cheaper_second}, "
-            f"{total_uses} keer =< {OWN_FROM_USES}: {rarely}",
+            f"{total_uses} keer <= {OWN_FROM_USES}: {rarely}",
         )
     )
     if cheaper_second and rarely:
         return Advice(
             "kopen & doorverkopen",
             "Koop tweedehands, verkoop later door.",
-            f"Je gebruikt het {total_uses} keer. Tweedehands kost het {euro(second.price)}"
+            f"Je gebruikt het {total_uses} keer. Tweedehands kost het {euro(second.price)} "
             "en je kunt het daarna weer verkopen.",
             price - second.price,
             checks,
         )
 
-    # 5 · niets anders past → bewust kopen
+    # 5 niets anders past -> bewust kopen
     checks.append(RuleCheck("bewust kopen", True, "geen andere regel paste"))
     return Advice(
         "bewust kopen",
