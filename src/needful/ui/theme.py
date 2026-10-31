@@ -49,6 +49,8 @@ body {{ font-family: 'Space Grotesk', system-ui, sans-serif; color: {INK}; }}
 .nf-lead {{ font-size: 17px; line-height: 1.45; }}
 .nf-btn-sm {{ min-height: 48px; font-size: 16px; border-radius: 12px; }}
 .nf-bar {{ height: 6px; border-radius: 3px; }}
+.nf-mic {{ width: 96px; height: 96px; background: {INK}; color: {YELLOW};
+box-shadow: 0 0 0 12px {TIP}; font-size: 24px; }}
 
 /* Tekstkleuren */
 .nf-muted {{ color: {MUTED}; }}
