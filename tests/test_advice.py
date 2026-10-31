@@ -62,6 +62,15 @@ def test_nothing_fits_means_buy_consciously():
     ]
 
 
+def test_reasons_read_as_proper_sentences():
+    # De reden staat letterlijk op het adviesscherm: geen aan elkaar geplakte woorden
+    impulse = decide("impuls", 149, 12, PITCH, 62).reason
+    second_hand = decide("concreet", 149, 12, [RENTAL, SECOND_HAND], 62).reason
+    assert "nodig. Wacht" in impulse
+    assert "€60 en je kunt" in second_hand
+    assert "  " not in impulse + second_hand
+
+
 def test_best_picks_cheapest():
     assert best(PITCH, "lenen") == NEIGHBOUR
 
