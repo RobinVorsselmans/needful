@@ -24,10 +24,10 @@ def logo(dot: str = GOLD) -> None:
 
 
 def header(step: int) -> None:
-    """Logo, 'VRAAG n / 4' en de voortgangsbalk."""
+    """Logo, 'VRAAG n/4' en de voortgangsbalk."""
     with ui.row().classes("w-full justify-between items-center"):
         logo()
-        ui.label(f"VRAAG {step} / {QUESTIONS}").classes("nf-mono nf-muted")
+        ui.label(f"VRAAG {step}/{QUESTIONS}").classes("nf-mono nf-muted")
     with ui.grid(columns=QUESTIONS).classes("w-full gap-1.5"):
         for i in range(1, QUESTIONS + 1):
             # Kleur hangt af van de stap, dus die blijft inline (maar wel als constante)
