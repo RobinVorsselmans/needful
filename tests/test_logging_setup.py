@@ -2,6 +2,7 @@ import logging
 
 from needful.logging_setup import setup_logging
 
+
 def test_level_comes_from_env(monkeypatch):
     monkeypatch.setenv("LOG_LEVEL", "debug")
     setup_logging()
