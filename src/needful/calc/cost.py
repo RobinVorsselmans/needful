@@ -8,6 +8,7 @@ def total_uses(uses_per_year: int, years: int) -> int:
     """Totaal aantal gebruiken."""
     return uses_per_year * years
 
+
 def cost_per_use(price: float, uses_per_year: int, years: int) -> float:
     """Kost per gebruik in euro, afgerond op 2 cijfers."""
     if price <= 0:

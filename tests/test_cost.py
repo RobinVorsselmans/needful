@@ -20,5 +20,6 @@ def test_invalid_uses():
     with pytest.raises(ValueError):
         cost_per_use(149, 0, 4)
 
+
 def test_total_uses_pitch_example():
     assert total_uses(3, 4) == 12
