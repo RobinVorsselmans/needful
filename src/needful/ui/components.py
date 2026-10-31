@@ -18,7 +18,7 @@ def screen(name: str, background: str = PAPER) -> ui.column:
 
 
 def logo(dot: str = GOLD) -> None:
-    ui.html(f'needful<span style="color: {dot}">.</span').classes("text-xl font-bold")
+    ui.html(f'needful<span style="color: {dot}">.</span>').classes("text-xl font-bold")
 
 
 def header(step: int) -> None:
@@ -41,11 +41,11 @@ def button(text: str, on_click: Callable[[], None], style: str = "nf-dark") -> u
     )
 
 
-def nav(back: str, next_to: str, next_label: str = "Volgende ->", style: str = "nf-dark") -> None:
+def nav(back: str, next_to: str, next_label: str = "Volgende →", style: str = "nf-dark") -> None:
     """onderste rij: "<- Terug" links,  volgende-kno rechts, Duwt zichzelf n aar onder."""
     ui.space()
     with ui.row().classes("w-full justify-between items-center"):
-        ui.link("<- Terug", back).classes("nf-back")
+        ui.link("← Terug", back).classes("nf-back")
         button(next_label, lambda: ui.navigate.to(next_to), style).style(
             "min-height: 48px; font-size: 16px; border-radius: 12px"
         )
