@@ -37,3 +37,6 @@ Thumbs.db
 
 # Claude Code (lokale settings)
 .claude/settings.local.json
+
+# Claude Code specs & plannen (lokaal, niet delen)
+docs/superpowers/
