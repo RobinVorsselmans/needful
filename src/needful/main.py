@@ -8,7 +8,7 @@ from nicegui import ui
 
 from needful.api.routes import router as api_router
 from needful.logging_setup import setup_logging
-from needful.ui.screens import advies, q1, q2, q3, q4, start  # noqa: F401  (registreert de schermen)
+from needful.ui.screens import advies, buurt, q1, q2, q3, start  # noqa: F401  (registreert de schermen)
 
 setup_logging()
 
