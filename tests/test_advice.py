@@ -1,4 +1,4 @@
-from needful.calc.advice import Alternative, best, decide
+from needful.calc.advice import Alternative, allowed, best, decide
 
 # De voorbeeldalternatieven uit de pitch
 LIBRARY = Alternative("Gereedschapsbib", "lenen", 1.2, 0)
@@ -77,3 +77,48 @@ def test_best_picks_cheapest():
 
 def test_best_return_none_when_nothing_of_that_kind_exists():
     assert best([RENTAL], "lenen") is None
+
+
+def test_without_score_the_reason_skips_it():
+    advice = decide("kapot", 149, 40, [])
+    assert advice.outcome == "bewust kopen"
+    assert "duurzaamheidsscore" not in advice.reason
+    assert advice.reason.startswith("Je gebruikt het 40 keer. Kies")
+
+
+def test_new_and_own_means_no_alternatives():
+    assert allowed(PITCH, "nieuw") == []
+
+
+def test_own_but_second_hand_keeps_only_second_hand():
+    assert allowed(PITCH, "tweedehands") == [SECOND_HAND]
+
+
+def test_access_is_enough_keeps_everything():
+    assert allowed(PITCH, "toegang") == PITCH
+
+
+def test_pitch_example_that_must_be_new_means_buy_consciously():
+    # vraag 3 = "Ja, nieuw en van mij": lenen bij de buren telt dan niet mee
+    assert decide("handig", 149, 12, allowed(PITCH, "nieuw")).outcome == "bewust kopen"
+
+
+def test_lending_without_known_distance_counts_as_nearby():
+    # voorstel van het taalmodel: "lenen bij de buren", zonder afstand
+    lend = Alternative("Lenen bij de buren", "lenen", None, 0)
+    advice = decide("handig", 149, 12, [lend])
+    assert advice.outcome == "lenen"
+    assert advice.reason == "Je gebruikt het 12 keer. Lenen bij de buren: dat kan gratis."
+
+
+def test_known_distance_wins_from_unknown_at_the_same_price():
+    unknown = Alternative("Uitleendienst", "lenen", None, 0)
+    assert best([unknown, NEIGHBOUR], "lenen") == NEIGHBOUR
+
+
+def test_laundromat_counts_as_renting():
+    # droogkast €500, 100 keer: wassalon €3 per keer = €300, goedkoper dan kopen
+    laundromat = Alternative("Wassalon", "huren", None, 3)
+    advice = decide("concreet", 500, 100, [laundromat])
+    assert advice.outcome == "huren"
+    assert "Wassalon" in advice.reason

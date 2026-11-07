@@ -6,14 +6,15 @@ Een beslissingshulp vóór je iets koopt. In ± 3 minuten beantwoord je vier eer
 
 Groepswerk **Python Developer 2** · Robin · Femke · Christian · oktober 2026
 
-## De vier vragen
+## De drie vragen
 
 | # | Vraag | Wat we berekenen |
 |---|-------|------------------|
 | 1 | Heb je het écht nodig? | behoefte of impuls |
-| 2 | Hoe vaak ga je het gebruiken? | kost per gebruik (€ ÷ aantal keer) |
-| 3 | Kan het anders in jouw regio? | lenen · huren · tweedehands in de buurt |
-| 4 | Hoe duurzaam is het product? | levensduur · herstelbaar · recycleerbaar · reviews → score /100 |
+| 2 | Hoe vaak ga je het gebruiken? | kost per gebruik (€ ÷ aantal keer), ook mét de extra kosten om mee rekening te houden (LLM) |
+| 3 | Moet het per se nieuw en van jou? | welke alternatieven meetellen + alternatieven met prijsindicatie, bv. een wassalon (LLM). Hier kies je ook: een antwoord, een alternatief, of "Zet alles op een rij" als vierde antwoord |
+
+Daarna volgt het advies. Dat vergelijkt je keuze met nieuw kopen en met wat de regels aanraden; koos je een alternatief, dan gaat het er verder op in. Koos je "Zet alles op een rij", dan zie je alle mogelijkheden: nieuw kopen (met extra kosten en exit-strategie), elk alternatief en niet kopen (bespaarde € en CO2), elk met de prijs over jouw gebruiksduur. Vanaf het advies zoek je met postcode + gemeente waar je het in je buurt kunt lenen, huren, tweedehands of nieuw kopen, laten herstellen of een alternatief vindt (OpenStreetMap + repaircafe.org, nagekeken door het LLM), met een link naar tweedehands op 2dehands.
 
 Antwoorden kan typend of met je stem. Geen login, geen persoonsgegevens.
 
@@ -24,8 +25,8 @@ Antwoorden kan typend of met je stem. Geen login, geen persoonsgegevens.
 - **FastAPI + Pydantic** – API
 - **SQLModel / SQLAlchemy 2 + Alembic** – database-laag
 - **PostgreSQL** – admin-module (gebruik & verbruik) + cache regio × product
-- **BeautifulSoup + httpx** – korte scraping van uitleen-/huur-/tweedehandssites
-- **OpenRouter** (of Ollama lokaal) – LLM + spraakmodel
+- **BeautifulSoup + httpx** – scraping van repaircafe.org, OpenStreetMap (Nominatim + Overpass) voor winkels en uitleenpunten
+- **OpenRouter** – LLM (`anthropic/claude-haiku-5.5`, vergelijking in `.env.example`); Ollama lokaal en spraak volgen later
 - **pytest** – tests, vooral op de rekenkern
 - **Docker** – lokaal draaien in één commando
 
@@ -38,7 +39,7 @@ needful/            Python-package
   api/              FastAPI-routes
   flow/             vragen & volgorde
   calc/             €/gebruik · score · advies  (pure Python, volledig getest)
-  alternatives/     LLM + scraping per regio
+  alternatives/     LLM (OpenRouter) + zoeken in de buurt (OpenStreetMap, repaircafe.org)
   voice/            spraak → antwoord
   db/               SQLModel-modellen, admin-module, cache
   ui/               NiceGUI-schermen + PWA (manifest, service worker)

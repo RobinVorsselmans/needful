@@ -26,3 +26,12 @@ def test_missing_fields_fall_back_to_defaults_and_are_reported():
 def test_unknown_keys_are_ignored():
     loaded, _ = Answers.from_dict({"product": "ladder", "old_field": 1})
     assert loaded.product == "ladder"
+
+
+def test_choice_on_question_3_tells_the_rules_what_is_allowed():
+    assert Answers(choice="nieuw").access == "nieuw"
+    assert Answers(choice="tweedehands").access == "tweedehands"
+    # lenen of huren, een alternatief of "alles op een rij": alles mag
+    assert Answers(choice="delen").access == "toegang"
+    assert Answers(choice="alternatief").access == "toegang"
+    assert Answers().access == "toegang"

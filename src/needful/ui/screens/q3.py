@@ -1,54 +1,80 @@
-"""Vraag 3: kan het anders in jouw buurt? Kaart en lijst zijn voorlopig voorbeelden."""
+"""Vraag 3, de laatste: moet het per se nieuw en van jou? Met alternatieven van het taalmodel
+(niet altijd goedkoper), elk met een prijsindicatie en wat het kost tegenover kopen.
+
+Hier beslis je ook: elk antwoord, een alternatief of "Zet alles op een rij" gaat naar het
+advies. Het advies (en de buurt) toont wat bij je keuze hoort; bij "Zet alles op een rij" alle
+mogelijkheden met hun prijs."""
 
 from nicegui import ui
 
-from needful.alternatives.examples import EXAMPLE_ALTERNATIVES
-from needful.calc.advice import Alternative
-from needful.calc.format import euro, km
-from needful.ui.components import header, nav, screen
-from needful.ui.storage import load_answers, save_answer
+from needful.ui.components import (
+    alternative_card,
+    button,
+    example_note,
+    header,
+    nav,
+    screen,
+    waiting,
+)
+from needful.ui.storage import load_answers, load_insights, save_answer
 
-# Waar de genummerde punten op de voorbeeldkaart staan: (links %, boven %)
-SPOTS = [(16, 22), (64, 58), (28, 74), (80, 20)]
-
-
-def price_text(alt: Alternative) -> str:
-    """€0, €60 of €25/dag: huren is per dag, de rest eenmalig."""
-    return euro(alt.price) + ("/dag" if alt.kind == "huren" else "")
-
-
-def map_placeholder() -> None:
-    """Grijs vlak met genummerde punten. De echte OpenStreetMap-kaart komt in sprint 3."""
-    with ui.element("div").classes("nf-map"):
-        ui.element("div").classes("nf-map-me")
-        for number, (alt, (left, top)) in enumerate(zip(EXAMPLE_ALTERNATIVES, SPOTS), start=1):
-            # De positie hangt af van de data, dus die blijft inline
-            ui.label(str(number)).classes(f"nf-pin nf-pin-{alt.kind}").style(
-                f"left: {left}%; top: {top}%"
-            )
-        ui.label("kaart · voorbeeld").classes("nf-mono nf-map-note")
+# key = Choice in flow/answers.py, waarde = tekst op knop
+CHOICES = {
+    "nieuw": "Ja, nieuw en van mij",
+    "tweedehands": "Van mij, maar tweedehands mag",
+    "delen": "Nee, lenen of huren is ook goed",
+    "alles": "Zet alles op een rij",
+}
 
 
 @ui.page("/vraag/3")
-def q3() -> None:
+async def q3() -> None:
     answers = load_answers()
     with screen("vraag 3"):
         header(3)
-        ui.html("Kan het anders in jouw buurt?", tag="h1").classes("nf-h1")
+        ui.html('Moet het per se <span class="nf-mark">nieuw</span> en van jou?', tag="h1").classes(
+            "nf-h1"
+        )
 
-        postcode = ui.input("Postcode", value=answers.postcode).props("outlined").classes("w-full")
-        # "blur" = je verlaat het veld: één logregel per wijziging, niet per letter
-        postcode.on("blur", lambda: save_answer("postcode", postcode.value))
+        with ui.column().classes("nf-tip w-full gap-1"):
+            ui.label("ALTERNATIEVEN").classes("nf-mono")
+            tip = ui.column().classes("w-full gap-3")
+            with tip:
+                waiting("Het taalmodel zoekt alternatieven…")
 
-        map_placeholder()
+        def choose(choice: str, alternative: str = "") -> None:
+            """Bewaren en naar het advies. Een alternatief = het hoeft niet nieuw en van jou
+            te zijn; het advies gaat er dan verder op in."""
+            save_answer("choice", choice)
+            save_answer("alternative", alternative)
+            ui.navigate.to("/advies")
 
-        with ui.column().classes("w-full gap-2"):
-            for number, alt in enumerate(EXAMPLE_ALTERNATIVES, start=1):
-                row_classes = f"nf-row nf-row-{alt.kind} justify-between items-center no-wrap"
-                with ui.row().classes(row_classes):
-                    with ui.column().classes("gap-0"):
-                        ui.label(f"{number} · {alt.name}").classes("font-bold")
-                        ui.label(f"{alt.kind} · {km(alt.distance_km)}").classes("text-sm")
-                    ui.label(price_text(alt)).classes("font-bold text-lg")
+        with ui.column().classes("w-full gap-3"):
+            for choice, label in CHOICES.items():
+                style = "nf-choice nf-selected" if choice == answers.choice else "nf-choice"
+                # choice=choice: elke knop onthoudt zijn eigen waarde
+                button(label, lambda choice=choice: choose(choice), style).props(
+                    "align=left"
+                ).classes("w-full")
+        # houdt de keuze die er al staat (standaard: alles op een rij)
+        nav(back="/vraag/2", next_to="/advies", next_label="Toon mijn advies →", style="nf-yellow")
 
-        nav(back="/vraag/2", next_to="/vraag/4")
+    await ui.context.client.connected()
+    insights, example = await load_insights(answers.product)
+    buy_total = answers.price + insights.extra_cost(answers.uses_per_year, answers.years)
+    tip.clear()
+    with tip:
+        if not insights.alternatives:
+            ui.label("Geen alternatief gevonden.").classes("nf-body")
+        for alternative in insights.alternatives:
+            chosen = answers.choice == "alternatief" and answers.alternative == alternative.name
+            # name=...: elke knop onthoudt zijn eigen alternatief
+            alternative_card(
+                alternative,
+                answers,
+                buy_total,
+                lambda name=alternative.name: choose("alternatief", name),
+                chosen,
+            )
+        if example:
+            example_note()

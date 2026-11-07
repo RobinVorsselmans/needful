@@ -84,6 +84,24 @@ box-shadow: 0 0 0 12px {TIP}; font-size: 24px; }}
 .nf-compare {{ opacity: 0.8; }}
 .nf-compare-win {{ font-size: 18px; font-weight: 700; color: {MINT}; }}
 
+/* In jouw buurt: één label per mogelijkheid (klasse-naam eindigt op de tag) */
+.nf-tag {{
+  font-size: 12px; font-weight: 500; padding: 2px 10px; border-radius: 999px; color: {INK};
+  white-space: nowrap;
+}}
+.nf-tag-kopen {{ background: {TIP}; }}
+.nf-tag-huren {{ background: {PINK}; }}
+.nf-tag-lenen {{ background: {GREEN}; }}
+.nf-tag-tweedehands {{ background: {LINE}; }}
+.nf-tag-herstellen {{ border: 1px solid {INK}; }}
+.nf-tag-alternatief {{ background: {MINT}; }}
+.nf-tag-ander {{ background: {MINT}; }}
+.nf-tag-laten {{ background: {YELLOW}; }}
+/* Alles op een rij: wat het advies aanraadt en wat jij koos */
+.nf-advised {{ color: {MINT}; }}
+.nf-chosen {{ color: {YELLOW}; }}
+.nf-link {{ color: {INK}; }}
+
 /* Tekstkleuren */
 .nf-muted {{ color: {MUTED}; }}
 .nf-faint {{ color: {FAINT}; }}

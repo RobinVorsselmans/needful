@@ -1,20 +1,22 @@
-"""Vraag 2: hoe vaak ga je het gebruiken"""
+"""Vraag 2: hoe vaak ga je het gebruiken, en wat kost het echt (met de extra kosten)?"""
 
 import logging
 
 from nicegui import ui
 
-from needful.calc.cost import cost_per_use
-from needful.calc.format import euro
-from needful.ui.components import header, nav, screen
-from needful.ui.storage import load_answers, save_answer
+from needful.alternatives.insights import ProductInsights
+from needful.calc.cost import cost_per_use, real_cost_per_use
+from needful.calc.format import euro, price_text
+from needful.ui.components import example_note, header, nav, screen, waiting
+from needful.ui.storage import load_answers, load_insights, save_answer
 
 log = logging.getLogger(__name__)
 
 
 @ui.page("/vraag/2")
-def q2() -> None:
+async def q2() -> None:
     answers = load_answers()
+    insights: ProductInsights | None = None  # komt pas na de LLM-vraag, onderaan
     with screen("vraag 2"):
         header(2)
         ui.html("Hoe vaak ga je het gebruiken?", tag="h1").classes("nf-h1")
@@ -34,18 +36,33 @@ def q2() -> None:
 
         result = ui.label().classes("text-xl font-bold")
 
+        with ui.column().classes("nf-tip w-full gap-2"):
+            ui.label("EXTRA KOSTEN OM MEE REKENING TE HOUDEN").classes("nf-mono")
+            extras = ui.column().classes("w-full gap-1")
+            with extras:
+                waiting("Het taalmodel rekent de extra kosten uit…")
+            real = ui.label().classes("font-bold")
+
         def update() -> None:
             # veld kan leeg zijn als je typt
             if None in (uses.value, years.value, price.value):
                 result.text = "= - per gebruik"
+                real.text = ""
                 return
             try:
                 value = cost_per_use(price.value, int(uses.value), int(years.value))
             except ValueError as error:
                 log.warning("ongeldige invoer op vraag 2: %s", error)
                 result.text = "= - per gebruik"
+                real.text = ""
                 return
             result.text = f"= {euro(value)} per gebruik"
+            if insights is not None:
+                extra = insights.extra_cost(int(uses.value), int(years.value))
+                with_extra = real_cost_per_use(
+                    price.value, extra, int(uses.value), int(years.value)
+                )
+                real.text = f"Met extra kosten: {euro(with_extra)} per gebruik"
 
         def save(field: str, value: float | None, cast: type) -> None:
             if value is not None:
@@ -58,3 +75,22 @@ def q2() -> None:
         update()
 
         nav(back="/vraag/1", next_to="/vraag/3", next_label="Klopt →")
+
+    # eerst de pagina tonen, dan pas het (trage) taalmodel vragen
+    await ui.context.client.connected()
+    insights, example = await load_insights(answers.product)
+    extras.clear()
+    with extras:
+        if not insights.costs():
+            ui.label("Geen extra kosten gevonden.").classes("nf-body")
+        for cost in insights.costs():
+            with ui.row().classes("w-full justify-between no-wrap gap-3"):
+                with ui.column().classes("gap-0"):
+                    ui.label(cost.name).classes("font-medium")
+                    ui.label(cost.note).classes("text-sm nf-muted")
+                ui.label(price_text(per_use=cost.per_use, per_year=cost.per_year)).classes(
+                    "text-sm font-bold text-right"
+                )
+        if example:
+            example_note()
+    update()

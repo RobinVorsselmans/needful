@@ -9,6 +9,7 @@ from typing import Literal
 from needful.calc.format import euro, km
 
 Need = Literal["concreet", "handig", "impuls", "kapot"]
+Access = Literal["nieuw", "tweedehands", "toegang"]  # vraag 3: moet het nieuw en van jou zijn?
 Kind = Literal["lenen", "huren", "tweedehands"]
 Outcome = Literal["laten", "lenen", "huren", "kopen & doorverkopen", "bewust kopen"]
 
@@ -20,8 +21,9 @@ OWN_FROM_USES = 24  # gebruiken we het meer dan dit, dan is het zelf hebben het 
 class Alternative:
     name: str
     kind: Kind
-    distance_km: float
-    price: float  # lenen=0, huren=per dag, tweedehands=eenmalig
+    # None = afstand onbekend: een voorstel van het taalmodel ("lenen bij de buren") telt als dichtbij
+    distance_km: float | None
+    price: float  # lenen=0, huren=per keer of per dag, tweedehands=eenmalig
 
 
 @dataclass(frozen=True)
@@ -41,11 +43,27 @@ class Advice:
 
 
 def best(alternatives: list[Alternative], kind: Kind) -> Alternative | None:
-    """Goedkoopste alternatief van deze soort; bij gelijke prijs het dichtstbijzijnde."""
+    """Goedkoopste alternatief van deze soort; bij gelijke prijs het dichtstbijzijnde
+    (een gekende afstand gaat voor een onbekende)."""
     options = [alternative for alternative in alternatives if alternative.kind == kind]
     return min(
-        options, key=lambda alternative: (alternative.price, alternative.distance_km), default=None
+        options,
+        key=lambda alternative: (
+            alternative.price,
+            alternative.distance_km is None,
+            alternative.distance_km or 0,
+        ),
+        default=None,
     )
+
+
+def allowed(alternatives: list[Alternative], access: Access) -> list[Alternative]:
+    """Enkel de alternatieven die passen bij het antwoord op vraag 3."""
+    if access == "nieuw":
+        return []
+    if access == "tweedehands":
+        return [alternative for alternative in alternatives if alternative.kind == "tweedehands"]
+    return list(alternatives)
 
 
 def decide(
@@ -53,7 +71,7 @@ def decide(
     price: float,
     total_uses: int,
     alternatives: list[Alternative],
-    score: int,
+    score: int | None = None,
 ) -> Advice:
     checks: list[RuleCheck] = []
     rarely = total_uses <= OWN_FROM_USES
@@ -73,7 +91,8 @@ def decide(
 
     # 2 gratis lenen dichtbij, en je gebruikt het weinig -> lenen
     lend = best(alternatives, "lenen")
-    free_nearby = lend is not None and lend.price == 0 and lend.distance_km <= LEND_MAX_KM
+    nearby = lend is not None and (lend.distance_km is None or lend.distance_km <= LEND_MAX_KM)
+    free_nearby = nearby and lend.price == 0
     checks.append(
         RuleCheck(
             "lenen",
@@ -87,7 +106,11 @@ def decide(
             "lenen",
             "Lenen is de slimste keuze.",
             f"Je gebruikt het {total_uses} keer. "
-            f"{lend.name} leent het gratis uit op {km(lend.distance_km)}.",
+            + (
+                f"{lend.name} leent het gratis uit op {km(lend.distance_km)}."
+                if lend.distance_km is not None
+                else f"{lend.name}: dat kan gratis."
+            ),
             price,
             checks,
         )
@@ -132,10 +155,12 @@ def decide(
 
     # 5 niets anders past -> bewust kopen
     checks.append(RuleCheck("bewust kopen", True, "geen andere regel paste"))
+    # zonder score (de wizard vraagt die niet meer) laten we dat stukje van de zin weg
+    score_text = "" if score is None else f" en de duurzaamheidsscore is {score}/100"
     return Advice(
         "bewust kopen",
         "Kopen kan, maar kies bewust.",
-        f"Je gebruikt het {total_uses} keer en de duurzaamheidsscore is {score}/100. "
+        f"Je gebruikt het {total_uses} keer{score_text}. "
         "Kies een model dat je kunt laten herstellen.",
         0,
         checks,

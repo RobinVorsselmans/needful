@@ -19,7 +19,7 @@ def start() -> None:
             "nf-h1 nf-display"
         )
         ui.label(
-            "Vier eerlijke vragen, ± 3 minuten. Je ziet wat je aankoop écht kost per gebruik "
+            "Drie eerlijke vragen, ± 3 minuten. Je ziet wat je aankoop écht kost per gebruik "
             "en of lenen of huren slimmer is."
         ).classes("nf-lead nf-soft")
 
